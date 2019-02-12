@@ -112,7 +112,7 @@ def cd(path):
         finally:
             os.chdir(old)
 
-async def run(cmd, check=True, quiet=False):
+async def run(cmd, check=True, quiet=False, env=None):
     """Runs a command within a new indent level.
 
     Note:
@@ -124,6 +124,7 @@ async def run(cmd, check=True, quiet=False):
        cmd (List[str]): for example, ``["ls", "-al"]``
        check (bool): if `True`, raise :exc:`CommandFailed` on non-zero exit
        quiet (bool): if `True`, don't print the command or indent
+       env (dict): an optional dictionary of extra environment variables
 
     Returns: 
        An :mod:`asyncio` coroutine.
@@ -138,6 +139,7 @@ async def run(cmd, check=True, quiet=False):
     async def go():
         proc = await asyncio.create_subprocess_exec(
             *cmd,
+            env=(dict(os.environ, **env) if env else None),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE)
 
